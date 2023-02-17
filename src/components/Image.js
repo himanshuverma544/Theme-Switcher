@@ -1,7 +1,9 @@
+import { getImage } from "../functions";
+
 const Image = (props) => {
 
   try{
-    const image = require(`../assets/images/${props.name}`);
+    const image = getImage(props.name);
     if (!image) return null;
     return <img className={props.className} src={image} alt={props.alt}/>;
   }
