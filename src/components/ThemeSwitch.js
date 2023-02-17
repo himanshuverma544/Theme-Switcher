@@ -4,6 +4,7 @@ import Context from '../contextAPI/Context';
 import Image from "../components/Image";
 
 import AppThemeObj from '../AppThemeObj';
+import { getImage } from '../functions';
 
 
 function ThemeSwitch() {
@@ -12,6 +13,7 @@ function ThemeSwitch() {
   const currentTheme = AppThemeObj[themeMode.theme];
 
   useEffect(() => {
+    document.querySelector("head link[rel='icon']").href = getImage(currentTheme.img.name);
     document.body.style.backgroundColor = currentTheme.body.backgroundColor;
   }, [currentTheme])
   
