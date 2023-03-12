@@ -1,22 +1,51 @@
-import { useContext, useEffect } from 'react';
+import { useEffect, useContext, useRef } from 'react';
 import Context from '../contextAPI/Context';
 
 import Image from "../components/Image";
 
 import AppThemeObj from '../AppThemeObj';
-import { getImage } from '../functions';
+import { memoGetImage } from '../functions';
 
 
-function ThemeSwitch() {
+const ThemeSwitch = () => {
 
-  const themeMode = useContext(Context);
-  const currentTheme = AppThemeObj[themeMode.theme];
+  const {theme, toggleTheme} = useContext(Context);
+  const currentTheme = AppThemeObj[theme];
+  const avoidOnce = useRef(true);
 
   useEffect(() => {
-    document.querySelector("head link[rel='icon']").href = getImage(currentTheme.img.name);
-    document.body.style.backgroundColor = currentTheme.body.backgroundColor;
-  }, [currentTheme])
-  
+    loadLocalCurrentTheme();
+
+    function loadLocalCurrentTheme() {
+      const localCurrentTheme = localStorage.getItem("localCurrentTheme");
+      if (localCurrentTheme === "local-dark") {
+        toggleTheme(localCurrentTheme);
+      }
+    }
+  // eslint-disable-next-line
+  }, []); 
+
+  useEffect(() => {
+
+    if (!avoidOnce.current) {
+      setLocalCurrentTheme();
+      switchTheme();
+
+      function setLocalCurrentTheme() {
+        localStorage.setItem("localCurrentTheme", `local-${theme}`);
+      }   
+
+      function switchTheme() {
+        document.querySelector("head link[rel='icon']").href = memoGetImage(currentTheme.img.name);
+        document.body.style.backgroundColor = currentTheme.body.backgroundColor;
+      }
+    }
+
+    if (avoidOnce.current) {
+      avoidOnce.current = false; 
+    }
+  }, [theme, currentTheme]);
+
   return (
     <div className="content">
       <h1 style={{color: currentTheme.heading.textColor}}>
@@ -28,7 +57,7 @@ function ThemeSwitch() {
           color: currentTheme.btn.textColor,
           backgroundColor: currentTheme.btn.backgroundColor
         }} 
-        onClick={themeMode.toggleTheme}>
+        onClick={() => toggleTheme(theme)}>
         {`Switch to ${currentTheme.btn.textContent} Theme`}
       </button>
     </div>
