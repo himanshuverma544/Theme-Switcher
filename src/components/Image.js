@@ -1,9 +1,9 @@
-import { getImage } from "../functions";
+import { memoGetImage } from "../functions";
 
 const Image = (props) => {
 
   try{
-    const image = getImage(props.name);
+    const image = memoGetImage(props.name);
     if (!image) return null;
     return <img className={props.className} src={image} alt={props.alt}/>;
   }
