@@ -16,7 +16,6 @@ const ThemeSwitch = () => {
     avoidOnce : true
   });
   
-
   useEffect(() => {
     loadLocalCurrentTheme();
 
