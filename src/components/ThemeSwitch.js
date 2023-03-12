@@ -11,15 +11,19 @@ const ThemeSwitch = () => {
 
   const {theme, toggleTheme} = useContext(Context);
   const currentTheme = AppThemeObj[theme];
-  const avoidOnce = useRef(true);
+  const manageTheme = useRef({
+    localCurrentTheme : "",
+    avoidOnce : true
+  });
+  
 
   useEffect(() => {
     loadLocalCurrentTheme();
 
     function loadLocalCurrentTheme() {
-      const localCurrentTheme = localStorage.getItem("localCurrentTheme");
-      if (localCurrentTheme === "local-dark") {
-        toggleTheme(localCurrentTheme);
+      manageTheme.current.localCurrentTheme = localStorage.getItem("localCurrentTheme");
+      if (manageTheme.current.localCurrentTheme === "local-dark") {
+        toggleTheme(manageTheme.current.localCurrentTheme);
       }
     }
   // eslint-disable-next-line
@@ -27,12 +31,12 @@ const ThemeSwitch = () => {
 
   useEffect(() => {
 
-    if (!avoidOnce.current) {
+    if (manageTheme.current.localCurrentTheme === "local-light" || !manageTheme.current.avoidOnce) {
       setLocalCurrentTheme();
       switchTheme();
 
       function setLocalCurrentTheme() {
-        localStorage.setItem("localCurrentTheme", `local-${theme}`);
+          localStorage.setItem("localCurrentTheme", `local-${theme}`);
       }   
 
       function switchTheme() {
@@ -41,8 +45,8 @@ const ThemeSwitch = () => {
       }
     }
 
-    if (avoidOnce.current) {
-      avoidOnce.current = false; 
+    if (manageTheme.current.avoidOnce) {
+      manageTheme.current.avoidOnce = false; 
     }
   }, [theme, currentTheme]);
 
