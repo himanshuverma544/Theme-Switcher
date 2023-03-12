@@ -7,8 +7,16 @@ const Provider = (props) => {
   
   return (
     <Context.Provider value={{
-      theme: theme,
-      toggleTheme: () => { setTheme(theme === "light" ? "dark" : "light")}
+      theme,
+      toggleTheme: themeValue => { 
+        setTheme(() => {
+          switch (themeValue) {
+            case "light" : return "dark";
+            case "dark" : return "light";
+            case "local-dark" : return "dark";
+            default : console.log("Theme Value: ", themeValue);
+          }
+        })},
       }}>
       {props.children}
     </Context.Provider>
