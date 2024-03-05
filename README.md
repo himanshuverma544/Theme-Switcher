@@ -8,13 +8,12 @@
 - gh-pages
 
 # Concepts Covered
-- ES6
+- JavaScript ES6
 - React Components
 - React Props
-- React Hooks (useEffect, useContext, useRef)
-- Context-API
+- React Hooks
 - Local Storage
-- Performance (memoization, avoiding redundant function calls)
+- Performance
 
 # Deployed On
 - GitHub Pages
