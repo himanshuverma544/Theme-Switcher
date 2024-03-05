@@ -1,53 +1,40 @@
-import { useEffect, useContext, useRef } from 'react';
-import Context from '../contextAPI/Context';
+import { useState, useEffect, useCallback } from 'react';
 
 import Image from "../components/Image";
 
-import AppThemeObj from '../AppThemeObj';
 import { memoGetImage } from '../functions';
+
+import AppThemeObj from '../AppThemeObj';
 
 
 const ThemeSwitch = () => {
 
-  const {theme, toggleTheme} = useContext(Context);
-  const currentTheme = AppThemeObj[theme];
-  const manageTheme = useRef({
-    localCurrentTheme : "",
-    avoidOnce : true
+  const [theme, setTheme] = useState(() => {
+    const localTheme = localStorage.getItem("localCurrentTheme");
+    return localTheme ? localTheme : "light";
   });
+
+  const currentTheme = AppThemeObj[theme];
+
+
+  const toggleTheme = useCallback(() => 
+    setTheme(prev => prev === "light" ? "dark" : "light")
+  , [setTheme]);
   
   useEffect(() => {
-    loadLocalCurrentTheme();
+    
+    const setLocalCurrentTheme = () => 
+    localStorage.setItem("localCurrentTheme", theme);
 
-    function loadLocalCurrentTheme() {
-      manageTheme.current.localCurrentTheme = localStorage.getItem("localCurrentTheme");
-      if (manageTheme.current.localCurrentTheme === "local-dark") {
-        toggleTheme(manageTheme.current.localCurrentTheme);
-      }
-    }
-  // eslint-disable-next-line
-  }, []); 
+    const switchTheme = () => {
+      document.querySelector("head link[rel='icon']").href = memoGetImage(currentTheme.img.name);
+      document.body.style.backgroundColor = currentTheme.body.backgroundColor;
+    };
 
-  useEffect(() => {
+    setLocalCurrentTheme();
+    switchTheme();
+  }, [theme, currentTheme.img.name, currentTheme.body.backgroundColor]);
 
-    if (manageTheme.current.localCurrentTheme === "local-light" || !manageTheme.current.avoidOnce) {
-      setLocalCurrentTheme();
-      switchTheme();
-
-      function setLocalCurrentTheme() {
-          localStorage.setItem("localCurrentTheme", `local-${theme}`);
-      }   
-
-      function switchTheme() {
-        document.querySelector("head link[rel='icon']").href = memoGetImage(currentTheme.img.name);
-        document.body.style.backgroundColor = currentTheme.body.backgroundColor;
-      }
-    }
-
-    if (manageTheme.current.avoidOnce) {
-      manageTheme.current.avoidOnce = false; 
-    }
-  }, [theme, currentTheme]);
 
   return (
     <div className="content">
@@ -60,7 +47,7 @@ const ThemeSwitch = () => {
           color: currentTheme.btn.textColor,
           backgroundColor: currentTheme.btn.backgroundColor
         }} 
-        onClick={() => toggleTheme(theme)}>
+        onClick={toggleTheme}>
         {`Switch to ${currentTheme.btn.textContent} Theme`}
       </button>
     </div>
